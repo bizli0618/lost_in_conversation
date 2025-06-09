@@ -1,0 +1,86 @@
+You must check whether the user’s reply fully reflects both what they heard and what they were thinking.
+
+User's Heard Input
+[[USER_SELECTED_SHARD]]
+
+User's Reasoning (optional)
+[[USER_REASONING]]
+
+User's spoken utterance
+[[USER_UTTERANCE]]
+
+
+
+If the user had no separate thoughts, simply compare what they actually said with what they heard (the input) and see whether anything is missing.
+
+If the user did have separate thoughts, examine whether the input (what was heard), the user’s own thoughts, and the words the user actually spoke are all mutually reasonable.
+
+If there was no relevant input yet the user still produced a statement, their statement must be backed by a reasonable inference drawn from their own thoughts.
+
+If some part of the input is missing from what the user said, consider why they chose to omit or condense that part.
+
+Example 1
+Input heard: “Your symptoms are that you have a headache in the mornings.”
+User’s spoken reply: “Yeah, I have headaches.”
+User had no extra thoughts.
+
+Because “in the mornings” is missing, the reply does not match the input. The user should instead answer with something like:
+
+“Yup, mostly headaches in the mornings.”
+so the key detail is retained.
+
+Example 2
+Input heard (abridged):
+
+“Choose the most appropriate option based on your inference and judgment.
+First-graders Gyun-ho and Su-jeong sit together at the same desk. Gyun-ho often teases Su-jeong, e.g., pulling her hair. One recess he suddenly kisses her cheek and runs away. Su-jeong bursts into tears. A classmate tells the homeroom teacher, who calls Su-jeong to the teachers’ room and says, ‘Su-jeong, I heard Gyun-ho kissed your cheek?’ Su-jeong sobs and cannot answer. Smiling as if it’s cute, the teacher says, ‘Oh, Su-jeong, don’t cry—Gyun-ho did it because he likes you.’ Su-jeong starts crying even harder.
+(1) The teacher approaches crying Su-jeong and talks with her.
+(2) Su-jeong kissed Gyun-ho’s cheek.
+(3) It is okay for a child to kiss a friend’s cheek if they like them.
+(4) Saying “Gyun-ho did it because he likes you” may hurt Su-jeong because it ignores her feelings.”
+
+User’s private thoughts:
+
+“According to the passage, the homeroom teacher told the crying Su-jeong, ‘Gyun-ho did it because he likes you,’ and Su-jeong cried even harder. This shows the teacher did not fully consider Su-jeong’s feelings and likely hurt her. Therefore option 4 is the most valid.
+However, option 1 also matches the facts (the teacher is indeed talking to crying Su-jeong). Thus there is no single clear answer, so the item is poorly constructed and could confuse test-takers who might waver between options 1 and 4.”
+
+User’s spoken reply: “The correct answer is 4, but the question is invalid.”
+
+Here the user has responded to the input, but their thoughts contain a cognitive error: the passage states the teacher called Su-jeong to the teachers’ room—not that the teacher was already beside her and talking to her while she cried—so option 1 is actually false. Realizing this, the correct reasoning is:
+
+Because the teacher summoned Su-jeong to the staff room, statement (1) is false.
+
+Therefore option 4 is correct, and the question is valid.
+
+The user should have answered accordingly.
+- [Output Format] Your response should be formatted as a JSON object with the following keys:
+    - `response`: The revised response of the user.
+    - `resoning`: The revised reasoning of the user, if User's Reasoning is not None.
+
+- [Output Format Example] Sample A – No Reasoning Provided
+
+    - Consistency Check
+        □ Fully matches   ☒ Partially missing   □ Contradiction
+
+    - Error Details
+        • Time qualifier “in the mornings” is absent from the utterance.
+
+    - Feedback & Recommended Fix
+        • Revised utterance: "Yes, I mostly get headaches in the mornings."
+
+    Sample B – Reasoning Provided
+
+    - Verdict
+        □ Fully matches   □ Partially missing   ☒ Logical error / inconsistency
+
+    - Error Details
+        • Input vs Reasoning → Reasoning misreads the passage:
+        the teacher *summoned* Su-jeong; she was not already beside her.
+        • Reasoning vs Utterance → Utterance inherits the same error.
+        • Input vs Utterance → Misclassification of option 1.
+
+    - Feedback & Recommended Fix
+        • Revised reasoning: According to the passage, the homeroom teacher told the crying Su-jeong, ‘Gyun-ho did it because he likes you,’ and Su-jeong cried even harder. This shows the teacher did not fully consider Su-jeong’s feelings and likely hurt her. Therefore option 4 is the most valid. The passage states the teacher called Su-jeong to the teachers’ room—not that the teacher was already beside her and talking to her while she cried—so option 1 is false. 
+        • Revised utterance:
+        "The correct answer is 4."
+

@@ -10,6 +10,9 @@ class UserAgent:
         self.task_name = task.get_task_name()
         with open("prompts/user_agent.txt", "r") as f:
             self.prompt_response = f.read()
+        with open("prompts/instruction_generation.txt", "r") as f:
+            self.instruction_generation_prompt = f.read()
+
 
     def generate_response(self, conversation, sample, temperature=1.0):
         num_user_msgs = sum(1 for msg in conversation if msg["role"] == "user")
@@ -43,4 +46,17 @@ class UserAgent:
             response_obj = generate_json([{"role": "user", "content": user_agent_prompt_populated}], model=self.model, timeout=100, return_metadata=True, temperature=temperature)
             response = response_obj["message"]
 
-            return response["response"], response["shard_id"], response_obj["total_usd"]
+            # User agent response verification with instruction_generation_prompt
+
+            matching_shards = [item for item in shards if item['shard_id'] == response['shard_id']]
+            if not matching_shards:
+                selected_shard = response['response']
+            else:
+                selected_shard = matching_shards[0]['shard']
+
+            instruction_generation_prompt_populated = self.instruction_generation_prompt.replace("[[USER_SELECTED_SHARD]]", selected_shard).replace("[[USER_REASONING]]", "None").replace("[[USER_UTTERANCE]]", response["response"])
+
+            instruct_response_obj = generate_json([{"role": "user", "content": instruction_generation_prompt_populated}], model=self.model, timeout=100, return_metadata=True, temperature=temperature)
+            instruct_response = instruct_response_obj["message"]
+
+            return instruct_response["response"], response["shard_id"], response_obj["total_usd"]+ instruct_response_obj["total_usd"]

@@ -50,6 +50,12 @@ class OpenAI_Model:
                 inp_token_cost, out_token_cost = 0.00375, 0.015
             else:
                 inp_token_cost, out_token_cost = 0.0025, 0.01
+        elif base_model.startswith("gpt-4.1-nano"):
+            inp_token_cost, out_token_cost = 0.0001, 0.0004
+        elif base_model.startswith("gpt-4.1-mini"):
+            inp_token_cost, out_token_cost = 0.0004, 0.0016
+        elif base_model.startswith("gpt-4.1"):
+            inp_token_cost, out_token_cost = 0.002, 0.008
         elif base_model.startswith("gpt-3.5-turbo"):
             inp_token_cost, out_token_cost = 0.0005, 0.0015
         elif base_model.startswith("o1-mini"):
